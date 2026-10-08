@@ -1,0 +1,1298 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>배움 기록 | 학교 설정</title>
+  <script>
+    const initialPageView = new URLSearchParams(window.location.search).get("view");
+    if (initialPageView === "teacher") {
+      document.documentElement.classList.add("compact-teacher");
+    }
+    if (initialPageView === "feedback") {
+      document.documentElement.classList.add("compact-feedback");
+    }
+  </script>
+  <style>
+    :root {
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --paper: #fffdf8;
+      --surface: rgba(255, 255, 255, 0.88);
+      --line: #e7e1d7;
+      --green: #176b5c;
+      --green-dark: #0f5146;
+      --green-soft: #e3f1ed;
+      --yellow: #f5c86b;
+      --danger: #b44949;
+      --shadow: 0 20px 50px rgba(37, 49, 45, 0.09);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(245, 200, 107, 0.2), transparent 27rem),
+        linear-gradient(135deg, #f7f2e9 0%, #edf5f1 100%);
+      font-family: "Pretendard", "Noto Sans KR", system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 30px 0 56px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 42px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--green-dark);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      font-size: 1.08rem;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      color: #fff;
+      background: var(--green);
+      box-shadow: 0 7px 15px rgba(23, 107, 92, 0.24);
+      font-size: 1.05rem;
+    }
+
+    .role-switch {
+      display: inline-flex;
+      padding: 4px;
+      border: 1px solid rgba(23, 107, 92, 0.13);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.64);
+    }
+
+    .role-button {
+      border: 0;
+      border-radius: 999px;
+      padding: 9px 16px;
+      color: var(--muted);
+      background: transparent;
+      font: inherit;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+
+    .role-button[aria-selected="true"] {
+      color: #fff;
+      background: var(--green);
+      box-shadow: 0 4px 10px rgba(23, 107, 92, 0.18);
+      font-weight: 700;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      align-items: end;
+      gap: 42px;
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      margin: 0 0 13px;
+      color: var(--green);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, p { margin-top: 0; }
+
+    h1 {
+      max-width: 620px;
+      margin-bottom: 15px;
+      font-size: clamp(2.3rem, 5vw, 4.5rem);
+      line-height: 1.06;
+      letter-spacing: -0.08em;
+    }
+
+    .hero-copy {
+      max-width: 510px;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 1.02rem;
+      line-height: 1.75;
+    }
+
+    .hero-note {
+      padding: 20px 22px;
+      border: 1px solid rgba(23, 107, 92, 0.13);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .hero-note strong {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--green-dark);
+      font-size: 0.9rem;
+    }
+
+    .hero-note span {
+      color: var(--muted);
+      font-size: 0.87rem;
+      line-height: 1.6;
+    }
+
+    .workspace {
+      min-height: 430px;
+      padding: clamp(24px, 5vw, 48px);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 30px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    .panel-header h2 {
+      margin-bottom: 8px;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      letter-spacing: -0.055em;
+    }
+
+    .panel-header p {
+      margin-bottom: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.93rem;
+    }
+
+    .status-chip {
+      flex: 0 0 auto;
+      padding: 8px 11px;
+      border-radius: 999px;
+      color: var(--green-dark);
+      background: var(--green-soft);
+      font-size: 0.78rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+      align-items: end;
+    }
+
+    .form-grid .primary-button { grid-column: 1 / -1; }
+
+    label {
+      display: block;
+      margin-bottom: 9px;
+      color: #374151;
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    input, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 14px 15px;
+      color: var(--ink);
+      background: #fff;
+      font: inherit;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    textarea {
+      display: block;
+      width: 100%;
+      min-height: 122px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 14px 15px;
+      color: var(--ink);
+      background: #fff;
+      font: inherit;
+      font-size: 1rem;
+      line-height: 1.6;
+      outline: none;
+      transition: border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 4px rgba(23, 107, 92, 0.12);
+    }
+
+    button { font-family: inherit; }
+
+    .primary-button {
+      width: 100%;
+      border: 0;
+      border-radius: 13px;
+      padding: 14px 18px;
+      color: #fff;
+      background: var(--green);
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 160ms ease, transform 160ms ease;
+    }
+
+    .primary-button:hover { background: var(--green-dark); transform: translateY(-1px); }
+    .primary-button:focus-visible, .role-button:focus-visible { outline: 3px solid rgba(245, 200, 107, 0.85); outline-offset: 3px; }
+
+    .helper {
+      min-height: 24px;
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .helper.error { color: var(--danger); }
+
+    .teacher-auth {
+      max-width: 520px;
+      margin-bottom: 24px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255, 253, 248, 0.86);
+    }
+
+    .teacher-auth h3 { margin: 0 0 7px; color: var(--green-dark); font-size: 1.08rem; letter-spacing: -0.04em; }
+    .teacher-auth > p { margin: 0 0 18px; color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
+    .teacher-auth .primary-button { margin-top: 14px; }
+    .teacher-workspace[hidden], .teacher-auth[hidden] { display: none; }
+
+    .teacher-session-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding: 11px 14px;
+      border-radius: 12px;
+      color: var(--green-dark);
+      background: var(--green-soft);
+      font-size: 0.83rem;
+    }
+
+    .text-button {
+      border: 0;
+      padding: 0;
+      color: var(--green-dark);
+      background: transparent;
+      font: inherit;
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    html.compact-teacher .shell {
+      width: min(820px, calc(100% - 28px));
+      padding-top: 18px;
+    }
+
+    html.compact-teacher .hero,
+    html.compact-teacher .role-switch,
+    html.compact-teacher #school-form,
+    html.compact-teacher #code-card,
+    html.compact-teacher #student-panel {
+      display: none;
+    }
+
+    html.compact-teacher .topbar { margin-bottom: 18px; }
+    html.compact-teacher .workspace {
+      min-height: 0;
+      padding: 24px;
+      border-radius: 22px;
+    }
+    html.compact-teacher .panel-header { margin-bottom: 18px; }
+    html.compact-teacher .panel-header h2 { font-size: 1.65rem; }
+    html.compact-teacher .teacher-session-bar { margin-bottom: 16px; }
+    html.compact-teacher .class-creator,
+    html.compact-teacher .submission-inbox { margin-top: 16px; }
+    html.compact-teacher #submission-inbox { display: none; }
+
+    html.compact-feedback .shell {
+      width: min(980px, calc(100% - 28px));
+      padding-top: 18px;
+    }
+
+    html.compact-feedback .hero,
+    html.compact-feedback .role-switch,
+    html.compact-feedback #school-form,
+    html.compact-feedback #code-card,
+    html.compact-feedback #class-creator,
+    html.compact-feedback #student-panel {
+      display: none;
+    }
+
+    html.compact-feedback .topbar { margin-bottom: 18px; }
+    html.compact-feedback .workspace {
+      min-height: 0;
+      padding: 24px;
+      border-radius: 22px;
+    }
+    html.compact-feedback .panel-header { margin-bottom: 18px; }
+    html.compact-feedback .panel-header h2 { font-size: 1.65rem; }
+    html.compact-feedback .teacher-session-bar { margin-bottom: 16px; }
+    html.compact-feedback .submission-inbox { margin-top: 16px; }
+
+    .code-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-top: 30px;
+      padding: 20px;
+      border: 1px solid #d5e7e1;
+      border-radius: 20px;
+      background: linear-gradient(105deg, #f0f8f5, #fffdf8);
+    }
+
+    .code-card h3 { margin: 0 0 5px; font-size: 0.92rem; }
+    .code-card p { margin: 0; color: var(--muted); font-size: 0.83rem; }
+
+    .class-creator {
+      margin-top: 24px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255, 253, 248, 0.82);
+    }
+
+    .class-creator h3 { margin: 0 0 6px; font-size: 1.05rem; letter-spacing: -0.04em; }
+    .class-creator > p { margin: 0 0 19px; color: var(--muted); font-size: 0.87rem; line-height: 1.6; }
+    .class-fields { display: grid; gap: 18px; }
+
+    .class-summary {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 14px;
+      background: var(--green-soft);
+    }
+
+    .class-summary span { display: block; margin-bottom: 4px; color: var(--green); font-size: 0.76rem; font-weight: 800; }
+    .class-summary strong { display: block; color: var(--green-dark); font-size: 1rem; }
+    .class-summary p { margin: 0; color: var(--ink); font-size: 0.9rem; line-height: 1.55; }
+
+    .submission-inbox {
+      margin-top: 24px;
+      padding: 22px;
+      border: 1px solid #d5e7e1;
+      border-radius: 20px;
+      background: linear-gradient(105deg, #f0f8f5, #fffdf8);
+    }
+
+    .submission-inbox h3 { margin: 0 0 6px; color: var(--green-dark); font-size: 1.05rem; letter-spacing: -0.04em; }
+    .submission-inbox > p { margin: 0 0 18px; color: var(--muted); font-size: 0.87rem; }
+    .submission-card { padding: 17px; border-radius: 14px; background: #fff; }
+    .submission-card .student-label { margin-bottom: 8px; color: var(--green); font-size: 0.78rem; font-weight: 800; }
+    .submission-card .submission-text { margin: 0; white-space: pre-wrap; color: var(--ink); line-height: 1.75; font-size: 0.94rem; }
+    .submission-empty { margin: 0; color: var(--muted); font-size: 0.88rem; }
+
+    .submission-layout {
+      display: grid;
+      grid-template-columns: minmax(190px, 0.38fr) minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .student-submission-list {
+      display: grid;
+      gap: 8px;
+      max-height: 520px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .submission-list-item {
+      display: grid;
+      gap: 4px;
+      width: 100%;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 12px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.7);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .submission-list-item:hover,
+    .submission-list-item[aria-selected="true"] {
+      border-color: #a9d1c5;
+      background: #fff;
+    }
+
+    .submission-list-item strong { color: var(--green-dark); font-size: 0.88rem; }
+    .submission-list-item span { color: var(--muted); font-size: 0.75rem; }
+    .submission-list-item p { overflow: hidden; margin: 0; color: var(--muted); font-size: 0.78rem; line-height: 1.4; text-overflow: ellipsis; white-space: nowrap; }
+
+    .submission-detail-label { margin: 0 0 10px; color: var(--green); font-size: 0.78rem; font-weight: 800; }
+
+    .feedback-form {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .feedback-form textarea { min-height: 110px; }
+    .feedback-form .primary-button { margin-top: 12px; }
+    .feedback-view {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 14px;
+      background: #fff9e9;
+    }
+
+    .feedback-view span { display: block; margin-bottom: 6px; color: #9a6a12; font-size: 0.76rem; font-weight: 800; }
+    .feedback-view p { margin: 0; white-space: pre-wrap; color: var(--ink); line-height: 1.7; font-size: 0.92rem; }
+
+    .revision-history {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .revision-history-title { color: var(--muted); font-size: 0.78rem; font-weight: 800; }
+    .revision-item { padding: 13px; border-radius: 12px; background: #f8f7f3; }
+    .revision-item strong { display: block; margin-bottom: 6px; color: var(--green-dark); font-size: 0.8rem; }
+    .revision-item p { margin: 0; white-space: pre-wrap; color: var(--ink); line-height: 1.6; font-size: 0.86rem; }
+    .revision-feedback { margin-top: 8px !important; color: #8a651e !important; }
+
+    .school-code {
+      padding: 8px 12px;
+      color: var(--green-dark);
+      border-radius: 10px;
+      background: #fff;
+      font-size: 1.38rem;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+    }
+
+    .student-entry {
+      max-width: 580px;
+      padding: 26px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255, 253, 248, 0.85);
+    }
+
+    .student-entry .entry-icon {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      margin-bottom: 18px;
+      border-radius: 14px;
+      color: var(--green-dark);
+      background: var(--yellow);
+      font-size: 1.2rem;
+    }
+
+    .student-entry h3 { margin-bottom: 8px; font-size: 1.2rem; letter-spacing: -0.04em; }
+    .student-entry p { margin-bottom: 20px; color: var(--muted); line-height: 1.65; font-size: 0.9rem; }
+    .student-entry .field-spacer { height: 16px; }
+
+    .student-entry .primary-button { margin-top: 20px; }
+
+    .student-class-view {
+      margin-top: 22px;
+      padding: 19px;
+      border: 1px solid #d5e7e1;
+      border-radius: 16px;
+      background: linear-gradient(105deg, #f0f8f5, #fffdf8);
+    }
+
+    .student-class-view h4 { margin: 0 0 8px; color: var(--green-dark); font-size: 1.15rem; }
+    .student-class-view p { margin: 0; color: var(--ink); line-height: 1.65; font-size: 0.9rem; }
+    .writing-form { margin-top: 22px; padding-top: 20px; border-top: 1px solid #dfece7; }
+    .writing-form textarea { min-height: 170px; }
+    .writing-form .helper { margin-top: 8px; }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 28px, 620px); padding-top: 20px; }
+      .topbar { align-items: flex-start; flex-direction: column; margin-bottom: 34px; }
+      .hero { grid-template-columns: 1fr; gap: 20px; }
+      h1 { font-size: clamp(2.5rem, 15vw, 4rem); }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid .primary-button { grid-column: auto; }
+      .panel-header { flex-direction: column; }
+      .code-card { align-items: flex-start; flex-direction: column; }
+      .submission-layout { grid-template-columns: 1fr; }
+      .student-submission-list { max-height: 220px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">✦</span> 배움 기록</div>
+      <nav class="role-switch" aria-label="사용자 역할 선택" role="tablist">
+        <button class="role-button" id="teacher-tab" type="button" role="tab" aria-selected="true" aria-controls="teacher-panel">선생님</button>
+        <button class="role-button" id="student-tab" type="button" role="tab" aria-selected="false" aria-controls="student-panel">학생</button>
+      </nav>
+    </header>
+
+    <section class="hero" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Learning, together</p>
+        <h1 id="page-title">오늘의 배움을<br>시작해요.</h1>
+        <p class="hero-copy">학교를 정하고, 서로의 배움이 이어질 수 있는 자리를 준비해 보세요.</p>
+      </div>
+      <aside class="hero-note">
+        <strong>먼저 학교를 연결해 주세요</strong>
+        <span>선생님은 학교 코드를 공유하고, 학생은 코드를 입력해 같은 공간으로 들어옵니다.</span>
+      </aside>
+    </section>
+
+    <section class="workspace">
+      <section id="teacher-panel" role="tabpanel" aria-labelledby="teacher-tab">
+        <div class="panel-header">
+          <div>
+            <h2 id="teacher-panel-title">선생님, 학교를 설정해 주세요</h2>
+            <p id="teacher-panel-description">학생이 찾아올 학교 이름을 입력하고 공유 코드를 확인하세요.</p>
+          </div>
+          <span class="status-chip" id="teacher-status">설정 전</span>
+        </div>
+
+        <section class="teacher-auth" id="teacher-auth" hidden aria-labelledby="teacher-auth-title">
+          <h3 id="teacher-auth-title">선생님 로그인</h3>
+          <p>선생님 작업 공간에 들어가려면 설정한 비밀번호를 입력해 주세요.</p>
+          <form id="teacher-login-form" novalidate>
+            <label for="teacher-login-password">선생님 비밀번호</label>
+            <input id="teacher-login-password" type="password" autocomplete="current-password" placeholder="비밀번호를 입력해 주세요" required>
+            <p class="helper" id="teacher-login-message" role="status" aria-live="polite"></p>
+            <button class="primary-button" type="submit">로그인하고 새 창 열기</button>
+          </form>
+        </section>
+
+        <div class="teacher-workspace" id="teacher-workspace">
+          <div class="teacher-session-bar" id="teacher-session-bar" hidden>
+            <span>선생님 작업 공간</span>
+            <button class="text-button" id="teacher-logout" type="button">로그아웃</button>
+          </div>
+
+        <form id="school-form" novalidate>
+          <div class="form-grid">
+            <div>
+              <label for="school-name">학교 이름</label>
+              <input id="school-name" name="schoolName" type="text" autocomplete="organization" placeholder="예: 우리 학교" maxlength="80" required>
+            </div>
+            <div>
+              <label for="teacher-name">선생님 성함</label>
+              <input id="teacher-name" name="teacherName" type="text" autocomplete="name" placeholder="예: 김배움" maxlength="40" required>
+            </div>
+            <div>
+              <label for="teacher-grade">담당 학년</label>
+              <select id="teacher-grade" name="teacherGrade" required>
+                <option value="">학년을 선택해 주세요</option>
+                <option value="1학년">1학년</option>
+                <option value="2학년">2학년</option>
+                <option value="3학년">3학년</option>
+                <option value="4학년">4학년</option>
+                <option value="5학년">5학년</option>
+                <option value="6학년">6학년</option>
+              </select>
+            </div>
+            <div>
+              <label for="teacher-password">선생님 비밀번호</label>
+              <input id="teacher-password" name="teacherPassword" type="password" autocomplete="new-password" placeholder="학생에게 알려주지 않을 비밀번호" minlength="4" required>
+            </div>
+            <button class="primary-button" type="submit">학교 저장하기</button>
+          </div>
+          <p class="helper" id="school-message" role="status" aria-live="polite">학교 이름을 저장하면 학생에게 공유할 코드가 만들어집니다.</p>
+        </form>
+
+        <div class="code-card" id="code-card" hidden>
+          <div>
+            <h3><span id="saved-school-name">학교</span>의 공유 코드</h3>
+            <p><span id="saved-teacher-info">선생님 정보</span> · 학생 화면에서 이 코드를 입력할 수 있도록 알려 주세요.</p>
+          </div>
+          <strong class="school-code" id="school-code" aria-label="학교 공유 코드"></strong>
+        </div>
+
+        <section class="class-creator" id="class-creator" hidden aria-labelledby="class-creator-title">
+          <h3 id="class-creator-title">오늘의 수업 만들기</h3>
+          <p>학생이 글을 쓰기 전에 확인할 수 있도록 수업 주제와 안내 질문을 입력하세요.</p>
+          <form id="class-form" novalidate>
+            <div class="class-fields">
+              <div>
+                <label for="class-topic">수업 주제</label>
+                <input id="class-topic" name="classTopic" type="text" placeholder="예: 오늘 배운 내용" maxlength="120" required>
+              </div>
+              <div>
+                <label for="class-question">안내 질문</label>
+                <textarea id="class-question" name="classQuestion" placeholder="예: 오늘 배운 것 중 가장 기억에 남는 내용은 무엇인가요?" maxlength="500" required></textarea>
+              </div>
+              <button class="primary-button" type="submit">수업 만들기</button>
+            </div>
+            <p class="helper" id="class-message" role="status" aria-live="polite">주제와 안내 질문을 입력하면 학생에게 보일 수업이 만들어집니다.</p>
+          </form>
+          <div class="class-summary" id="class-summary" hidden>
+            <div><span>현재 수업 주제</span><strong id="saved-class-topic"></strong></div>
+            <div><span>학생에게 보여 줄 안내 질문</span><p id="saved-class-question"></p></div>
+          </div>
+        </section>
+
+        <section class="submission-inbox" id="submission-inbox" hidden aria-labelledby="submission-inbox-title">
+          <h3 id="submission-inbox-title">학생 글 목록</h3>
+          <p>학생을 선택하면 최신 글과 이전 제출 기록을 확인할 수 있습니다.</p>
+          <div class="submission-layout">
+            <div>
+              <p class="submission-empty" id="submission-empty">아직 제출된 글이 없습니다.</p>
+              <div class="student-submission-list" id="student-submission-list" role="listbox" aria-label="학생 글 목록"></div>
+            </div>
+            <article class="submission-card" id="submission-card" hidden>
+              <div class="submission-detail-label">선택한 학생의 글</div>
+              <div class="student-label" id="submission-student"></div>
+              <p class="submission-text" id="submission-text"></p>
+              <form class="feedback-form" id="feedback-form" novalidate>
+                <label for="teacher-feedback">학생에게 남길 피드백</label>
+                <textarea id="teacher-feedback" placeholder="학생의 글을 읽고 피드백을 남겨 주세요." maxlength="1000" required></textarea>
+                <p class="helper" id="feedback-message" role="status" aria-live="polite">피드백을 입력하고 저장해 주세요.</p>
+                <button class="primary-button" type="submit">피드백 저장하기</button>
+              </form>
+              <div class="revision-history" id="teacher-revision-history" hidden></div>
+            </article>
+          </div>
+        </section>
+        </div>
+      </section>
+
+      <section id="student-panel" role="tabpanel" aria-labelledby="student-tab" hidden>
+        <div class="panel-header">
+          <div>
+            <h2>학생, 학교 코드로 들어오세요</h2>
+            <p>선생님에게 받은 학교 코드를 입력하면 됩니다.</p>
+          </div>
+          <span class="status-chip">학생 화면</span>
+        </div>
+
+        <div class="student-entry">
+          <div class="entry-icon" aria-hidden="true">↗</div>
+          <h3>학생 정보와 학교 코드 입력</h3>
+          <p>이름과 선생님에게 받은 학교 코드를 입력해 주세요.</p>
+          <form id="student-entry-form" novalidate>
+            <label for="student-name">학생 이름</label>
+            <input id="student-name" type="text" autocomplete="name" placeholder="예: 이배움" maxlength="40">
+            <div class="field-spacer"></div>
+            <label for="student-school-code">학교 코드</label>
+            <input id="student-school-code" type="text" inputmode="text" autocomplete="off" placeholder="예: BAEUM7" maxlength="6" aria-describedby="student-code-help">
+            <p class="helper" id="student-code-help">학교 코드를 입력하면 수업에 들어갈 준비가 됩니다.</p>
+            <button class="primary-button" type="submit">수업 들어가기</button>
+          </form>
+          <div class="student-class-view" id="student-class-view" hidden>
+            <h4 id="student-class-topic"></h4>
+            <p id="student-class-question"></p>
+            <form class="writing-form" id="writing-form" novalidate>
+              <label for="student-writing">배운 내용 쓰기</label>
+              <textarea id="student-writing" placeholder="안내 질문을 참고해 3~5문장으로 작성해 주세요." maxlength="1500" required></textarea>
+              <p class="helper" id="writing-message">문장마다 마침표나 물음표를 붙여 주세요. 현재 0문장입니다.</p>
+              <button class="primary-button" id="writing-submit-button" type="submit">글 제출하기</button>
+            </form>
+            <div class="submission-card" id="student-submission-card" hidden>
+              <div class="student-label" id="student-submission-label">현재 제출한 글</div>
+              <p class="submission-text" id="student-submission-text"></p>
+              <div class="feedback-view" id="student-feedback-view" hidden>
+                <span>선생님 피드백</span>
+                <p id="student-feedback-text"></p>
+              </div>
+              <div class="revision-history" id="student-revision-history" hidden></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const storageKey = "feedback-site-school";
+      const classStorageKey = "feedback-site-class";
+      const submissionStorageKey = "feedback-site-submission";
+      const submissionHistoryStorageKey = "feedback-site-submission-history";
+      const feedbackStorageKey = "feedback-site-feedback";
+      const studentNameStorageKey = "feedback-site-student-name";
+      const teacherSessionStorageKey = "feedback-site-teacher-session";
+      const teacherTab = document.querySelector("#teacher-tab");
+      const studentTab = document.querySelector("#student-tab");
+      const teacherPanel = document.querySelector("#teacher-panel");
+      const studentPanel = document.querySelector("#student-panel");
+      const teacherAuth = document.querySelector("#teacher-auth");
+      const teacherLoginForm = document.querySelector("#teacher-login-form");
+      const teacherLoginPassword = document.querySelector("#teacher-login-password");
+      const teacherLoginMessage = document.querySelector("#teacher-login-message");
+      const teacherWorkspace = document.querySelector("#teacher-workspace");
+      const teacherSessionBar = document.querySelector("#teacher-session-bar");
+      const teacherLogout = document.querySelector("#teacher-logout");
+      const teacherPanelTitle = document.querySelector("#teacher-panel-title");
+      const teacherPanelDescription = document.querySelector("#teacher-panel-description");
+      const form = document.querySelector("#school-form");
+      const schoolNameInput = document.querySelector("#school-name");
+      const teacherNameInput = document.querySelector("#teacher-name");
+      const teacherGradeInput = document.querySelector("#teacher-grade");
+      const teacherPasswordInput = document.querySelector("#teacher-password");
+      const schoolMessage = document.querySelector("#school-message");
+      const teacherStatus = document.querySelector("#teacher-status");
+      const codeCard = document.querySelector("#code-card");
+      const savedSchoolName = document.querySelector("#saved-school-name");
+      const savedTeacherInfo = document.querySelector("#saved-teacher-info");
+      const schoolCode = document.querySelector("#school-code");
+      const studentNameInput = document.querySelector("#student-name");
+      const classCreator = document.querySelector("#class-creator");
+      const classForm = document.querySelector("#class-form");
+      const classTopicInput = document.querySelector("#class-topic");
+      const classQuestionInput = document.querySelector("#class-question");
+      const classMessage = document.querySelector("#class-message");
+      const classSummary = document.querySelector("#class-summary");
+      const savedClassTopic = document.querySelector("#saved-class-topic");
+      const savedClassQuestion = document.querySelector("#saved-class-question");
+      const submissionInbox = document.querySelector("#submission-inbox");
+      const submissionEmpty = document.querySelector("#submission-empty");
+      const studentSubmissionList = document.querySelector("#student-submission-list");
+      const submissionCard = document.querySelector("#submission-card");
+      const submissionStudent = document.querySelector("#submission-student");
+      const submissionText = document.querySelector("#submission-text");
+      const feedbackForm = document.querySelector("#feedback-form");
+      const teacherFeedback = document.querySelector("#teacher-feedback");
+      const feedbackMessage = document.querySelector("#feedback-message");
+      const teacherRevisionHistory = document.querySelector("#teacher-revision-history");
+      const studentEntryForm = document.querySelector("#student-entry-form");
+      const studentSchoolCodeInput = document.querySelector("#student-school-code");
+      const studentCodeHelp = document.querySelector("#student-code-help");
+      const studentClassView = document.querySelector("#student-class-view");
+      const studentClassTopic = document.querySelector("#student-class-topic");
+      const studentClassQuestion = document.querySelector("#student-class-question");
+      const writingForm = document.querySelector("#writing-form");
+      const studentWriting = document.querySelector("#student-writing");
+      const writingMessage = document.querySelector("#writing-message");
+      const studentSubmissionCard = document.querySelector("#student-submission-card");
+      const studentSubmissionLabel = document.querySelector("#student-submission-label");
+      const studentSubmissionText = document.querySelector("#student-submission-text");
+      const studentFeedbackView = document.querySelector("#student-feedback-view");
+      const studentFeedbackText = document.querySelector("#student-feedback-text");
+      const studentRevisionHistory = document.querySelector("#student-revision-history");
+      const writingSubmitButton = document.querySelector("#writing-submit-button");
+      let selectedTeacherStudentName = "";
+
+      function createSchoolCode() {
+        const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        let code = "";
+        for (let index = 0; index < 6; index += 1) {
+          code += alphabet[Math.floor(Math.random() * alphabet.length)];
+        }
+        return code;
+      }
+
+      function readSchool() {
+        try {
+          return JSON.parse(localStorage.getItem(storageKey) || "null");
+        } catch (error) {
+          return null;
+        }
+      }
+
+      function isTeacherLoggedIn() {
+        return localStorage.getItem(teacherSessionStorageKey) === "true";
+      }
+
+      function setTeacherLoggedIn(loggedIn) {
+        if (loggedIn) {
+          localStorage.setItem(teacherSessionStorageKey, "true");
+        } else {
+          localStorage.removeItem(teacherSessionStorageKey);
+        }
+      }
+
+      function openTeacherWindow() {
+        const teacherUrl = new URL(window.location.href);
+        teacherUrl.searchParams.set("view", "teacher");
+        const teacherWindow = window.open(teacherUrl.toString(), "feedback-site-teacher", "noopener,noreferrer,width=860,height=820,resizable=yes,scrollbars=yes");
+        if (!teacherWindow) {
+          teacherLoginMessage.textContent = "새 창이 차단되었습니다. 브라우저의 팝업 허용 후 다시 로그인해 주세요.";
+          teacherLoginMessage.classList.add("error");
+        }
+      }
+
+      function openFeedbackWindow() {
+        const feedbackUrl = new URL(window.location.href);
+        feedbackUrl.searchParams.set("view", "feedback");
+        const feedbackWindow = window.open(feedbackUrl.toString(), "feedback-site-feedback", "noopener,noreferrer,width=1000,height=820,resizable=yes,scrollbars=yes");
+        if (!feedbackWindow) {
+          classMessage.textContent = "수업은 저장되었습니다. 새 창이 차단되어 학생 글 목록을 열지 못했습니다. 팝업을 허용한 뒤 다시 수업을 저장해 주세요.";
+          classMessage.classList.add("error");
+        }
+      }
+
+      function showTeacherAccess(school) {
+        const hasPassword = Boolean(school?.password);
+        const loggedIn = hasPassword ? isTeacherLoggedIn() : true;
+        teacherAuth.hidden = !hasPassword || loggedIn;
+        teacherWorkspace.hidden = !loggedIn;
+        teacherSessionBar.hidden = !hasPassword || !loggedIn;
+        if (hasPassword && !loggedIn) {
+          teacherStatus.textContent = "로그인 필요";
+        } else if (loggedIn && school?.name) {
+          teacherStatus.textContent = "로그인됨";
+        }
+      }
+
+      function readClass() {
+        try {
+          return JSON.parse(localStorage.getItem(classStorageKey) || "null");
+        } catch (error) {
+          return null;
+        }
+      }
+
+      function readSubmissions() {
+        try {
+          const savedHistory = JSON.parse(localStorage.getItem(submissionHistoryStorageKey) || "null");
+          if (Array.isArray(savedHistory)) {
+            return savedHistory;
+          }
+          const previousSubmission = JSON.parse(localStorage.getItem(submissionStorageKey) || "null");
+          if (!previousSubmission || !previousSubmission.text) {
+            return [];
+          }
+          const previousFeedback = JSON.parse(localStorage.getItem(feedbackStorageKey) || "null");
+          const migrated = [{
+            ...previousSubmission,
+            version: 1,
+            feedback: previousFeedback?.text || ""
+          }];
+          localStorage.setItem(submissionHistoryStorageKey, JSON.stringify(migrated));
+          return migrated;
+        } catch (error) {
+          return [];
+        }
+      }
+
+      function saveSubmissions(submissions) {
+        localStorage.setItem(submissionHistoryStorageKey, JSON.stringify(submissions));
+        const latest = submissions[submissions.length - 1] || null;
+        if (latest) {
+          localStorage.setItem(submissionStorageKey, JSON.stringify(latest));
+        }
+      }
+
+      function getStudentSubmissions(studentName) {
+        const name = studentName || "학생";
+        return readSubmissions().filter((submission) => (submission.studentName || "학생") === name);
+      }
+
+      function countSentences(text) {
+        return text.split(/[.!?。！？]+/).map((sentence) => sentence.trim()).filter(Boolean).length;
+      }
+
+      function renderRevisionHistory(container, submissions, title) {
+        container.replaceChildren();
+        if (!submissions.length) {
+          container.hidden = true;
+          return;
+        }
+        const heading = document.createElement("div");
+        heading.className = "revision-history-title";
+        heading.textContent = title;
+        container.appendChild(heading);
+        submissions.forEach((submission) => {
+          const item = document.createElement("article");
+          item.className = "revision-item";
+          const label = document.createElement("strong");
+          label.textContent = `${submission.version || 1}차 제출`;
+          const text = document.createElement("p");
+          text.textContent = submission.text;
+          item.append(label, text);
+          if (submission.feedback) {
+            const feedback = document.createElement("p");
+            feedback.className = "revision-feedback";
+            feedback.textContent = `피드백: ${submission.feedback}`;
+            item.appendChild(feedback);
+          }
+          container.appendChild(item);
+        });
+        container.hidden = false;
+      }
+
+      function showStudentSubmission() {
+        const studentName = studentNameInput.value.trim() || "학생";
+        const submissions = getStudentSubmissions(studentName);
+        const submission = submissions[submissions.length - 1] || null;
+        if (!submission || !submission.text) {
+          studentSubmissionCard.hidden = true;
+          studentFeedbackView.hidden = true;
+          studentRevisionHistory.hidden = true;
+          writingSubmitButton.textContent = "글 제출하기";
+          return;
+        }
+        studentSubmissionCard.hidden = false;
+        studentSubmissionText.textContent = submission.text;
+        studentSubmissionLabel.textContent = submission.version > 1
+          ? `현재 제출한 글 (${submission.version}차 수정)`
+          : "현재 제출한 글";
+        const feedback = submission.feedback || "";
+        studentFeedbackView.hidden = !feedback;
+        if (feedback) {
+          studentFeedbackText.textContent = feedback;
+        }
+        studentWriting.value = submission.text;
+        writingSubmitButton.textContent = "수정 글 제출하기";
+        writingMessage.textContent = "현재 제출한 글을 수정해 다시 제출할 수 있습니다.";
+        writingMessage.classList.remove("error");
+        renderRevisionHistory(studentRevisionHistory, submissions.slice(0, -1), "이전 글과 피드백");
+      }
+
+      function showTeacherSubmission(studentName) {
+        const submissions = getStudentSubmissions(studentName);
+        const submission = submissions[submissions.length - 1] || null;
+        if (!submission) {
+          submissionCard.hidden = true;
+          return;
+        }
+        selectedTeacherStudentName = studentName;
+        submissionCard.hidden = false;
+        submissionStudent.textContent = `${studentName}의 ${submission.version > 1 ? "최신 수정 글" : "새 글"}`;
+        submissionText.textContent = submission.text;
+        teacherFeedback.value = submission.feedback || "";
+        feedbackMessage.textContent = submission.feedback ? "저장된 피드백입니다." : "피드백을 입력하고 저장해 주세요.";
+        feedbackMessage.classList.remove("error");
+        renderRevisionHistory(teacherRevisionHistory, submissions.slice(0, -1), "이전 제출 기록");
+        studentSubmissionList.querySelectorAll(".submission-list-item").forEach((item) => {
+          item.setAttribute("aria-selected", String(item.dataset.studentName === studentName));
+        });
+      }
+
+      function renderTeacherSubmissionList() {
+        const grouped = new Map();
+        readSubmissions().forEach((submission) => {
+          const studentName = submission.studentName || "학생";
+          if (!grouped.has(studentName)) grouped.set(studentName, []);
+          grouped.get(studentName).push(submission);
+        });
+        studentSubmissionList.replaceChildren();
+        if (!grouped.size) {
+          submissionEmpty.hidden = false;
+          submissionCard.hidden = true;
+          selectedTeacherStudentName = "";
+          return;
+        }
+        submissionEmpty.hidden = true;
+        grouped.forEach((submissions, studentName) => {
+          const latest = submissions[submissions.length - 1];
+          const item = document.createElement("button");
+          item.type = "button";
+          item.className = "submission-list-item";
+          item.dataset.studentName = studentName;
+          item.setAttribute("role", "option");
+          item.setAttribute("aria-selected", String(studentName === selectedTeacherStudentName));
+          const name = document.createElement("strong");
+          name.textContent = studentName;
+          const meta = document.createElement("span");
+          meta.textContent = latest.version > 1 ? `최신 수정 글 · ${latest.version}차 제출` : "새 글";
+          const preview = document.createElement("p");
+          preview.textContent = latest.text;
+          item.append(name, meta, preview);
+          item.addEventListener("click", () => showTeacherSubmission(studentName));
+          studentSubmissionList.appendChild(item);
+        });
+        if (selectedTeacherStudentName && grouped.has(selectedTeacherStudentName)) {
+          showTeacherSubmission(selectedTeacherStudentName);
+        } else {
+          submissionCard.hidden = true;
+        }
+      }
+
+      function showClass(classInfo) {
+        if (!classInfo || !classInfo.topic || !classInfo.question) {
+          classSummary.hidden = true;
+          classTopicInput.value = "";
+          classQuestionInput.value = "";
+          return;
+        }
+        classTopicInput.value = classInfo.topic;
+        classQuestionInput.value = classInfo.question;
+        savedClassTopic.textContent = classInfo.topic;
+        savedClassQuestion.textContent = classInfo.question;
+        classSummary.hidden = false;
+      }
+
+      function showSchool(school) {
+        if (!school || !school.name || !school.code) {
+          codeCard.hidden = true;
+          classCreator.hidden = true;
+          submissionInbox.hidden = true;
+          teacherStatus.textContent = "설정 전";
+          return;
+        }
+        savedSchoolName.textContent = school.name;
+        schoolCode.textContent = school.code;
+        const teacherInfo = [school.teacherName, school.grade].filter(Boolean).join(" · ");
+        savedTeacherInfo.textContent = teacherInfo || "선생님 정보를 설정해 주세요";
+        codeCard.hidden = false;
+        classCreator.hidden = false;
+        submissionInbox.hidden = false;
+        teacherStatus.textContent = "설정 완료";
+        schoolNameInput.value = school.name;
+        teacherNameInput.value = school.teacherName || "";
+        teacherGradeInput.value = school.grade || "";
+      }
+
+      function switchRole(role) {
+        const isTeacher = role === "teacher";
+        teacherTab.setAttribute("aria-selected", String(isTeacher));
+        studentTab.setAttribute("aria-selected", String(!isTeacher));
+        teacherPanel.hidden = !isTeacher;
+        studentPanel.hidden = isTeacher;
+        const pageView = new URLSearchParams(window.location.search).get("view");
+        document.title = isTeacher
+          ? (pageView === "feedback" ? "배움 기록 | 학생 글 목록" : "배움 기록 | 학교 설정")
+          : "배움 기록 | 학교 입장";
+        document.documentElement.classList.toggle("compact-teacher", isTeacher && pageView === "teacher");
+        document.documentElement.classList.toggle("compact-feedback", isTeacher && pageView === "feedback");
+        if (isTeacher && pageView === "feedback") {
+          teacherPanelTitle.textContent = "학생 글 목록";
+          teacherPanelDescription.textContent = "학생을 선택하면 최신 글과 이전 제출 기록을 확인할 수 있습니다.";
+        } else if (isTeacher) {
+          teacherPanelTitle.textContent = "선생님, 학교를 설정해 주세요";
+          teacherPanelDescription.textContent = "학생이 찾아올 학교 이름을 입력하고 공유 코드를 확인하세요.";
+        }
+        if (isTeacher) {
+          showTeacherAccess(readSchool());
+        }
+      }
+
+      teacherTab.addEventListener("click", () => switchRole("teacher"));
+      studentTab.addEventListener("click", () => switchRole("student"));
+
+      teacherLoginForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const school = readSchool();
+        const password = teacherLoginPassword.value;
+        if (!school?.password || password !== school.password) {
+          teacherLoginMessage.textContent = "비밀번호가 맞지 않습니다.";
+          teacherLoginMessage.classList.add("error");
+          teacherLoginPassword.focus();
+          return;
+        }
+        setTeacherLoggedIn(true);
+        teacherLoginPassword.value = "";
+        teacherLoginMessage.textContent = "로그인되었습니다. 선생님 작업 창을 여는 중입니다.";
+        teacherLoginMessage.classList.remove("error");
+        showTeacherAccess(school);
+        openTeacherWindow();
+      });
+
+      teacherLogout.addEventListener("click", () => {
+        setTeacherLoggedIn(false);
+        showTeacherAccess(readSchool());
+        teacherLoginMessage.textContent = "로그아웃되었습니다.";
+        teacherLoginMessage.classList.remove("error");
+      });
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const name = schoolNameInput.value.trim();
+        const teacherName = teacherNameInput.value.trim();
+        const grade = teacherGradeInput.value;
+        const previousSchool = readSchool();
+        const password = teacherPasswordInput.value.trim() || previousSchool?.password || "";
+        if (!name || !teacherName || !grade || password.length < 4) {
+          schoolMessage.textContent = "학교 이름, 선생님 성함, 담당 학년과 4자 이상 비밀번호를 입력해 주세요.";
+          schoolMessage.classList.add("error");
+          (schoolNameInput.value ? teacherNameInput.value ? teacherGradeInput : teacherNameInput : schoolNameInput).focus();
+          return;
+        }
+
+        const school = {
+          name,
+          code: previousSchool && previousSchool.name === name ? previousSchool.code : createSchoolCode(),
+          teacherName,
+          grade,
+          password
+        };
+        localStorage.setItem(storageKey, JSON.stringify(school));
+        setTeacherLoggedIn(true);
+        showSchool(school);
+        showTeacherAccess(school);
+        teacherPasswordInput.value = "";
+        schoolMessage.textContent = "학교와 선생님 계정이 저장되었습니다. 아래 코드를 학생에게 공유해 주세요.";
+        schoolMessage.classList.remove("error");
+      });
+
+      classForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const topic = classTopicInput.value.trim();
+        const question = classQuestionInput.value.trim();
+        if (!topic || !question) {
+          classMessage.textContent = "수업 주제와 안내 질문을 모두 입력해 주세요.";
+          classMessage.classList.add("error");
+          (topic ? classQuestionInput : classTopicInput).focus();
+          return;
+        }
+        const classInfo = { topic, question };
+        localStorage.setItem(classStorageKey, JSON.stringify(classInfo));
+        showClass(classInfo);
+        classMessage.textContent = "수업이 만들어졌습니다. 학생 화면에서 학교 코드로 들어올 수 있습니다.";
+        classMessage.classList.remove("error");
+        openFeedbackWindow();
+      });
+
+      studentWriting.addEventListener("input", () => {
+        const count = countSentences(studentWriting.value);
+        writingMessage.textContent = `문장마다 마침표나 물음표를 붙여 주세요. 현재 ${count}문장입니다.`;
+        writingMessage.classList.remove("error");
+      });
+
+      writingForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const text = studentWriting.value.trim();
+        const sentenceCount = countSentences(text);
+        if (sentenceCount < 3 || sentenceCount > 5) {
+          writingMessage.textContent = `글은 3~5문장이어야 합니다. 현재 ${sentenceCount}문장입니다.`;
+          writingMessage.classList.add("error");
+          studentWriting.focus();
+          return;
+        }
+        const studentName = studentNameInput.value.trim() || "학생";
+        const submissions = readSubmissions();
+        const studentSubmissions = getStudentSubmissions(studentName);
+        const submission = {
+          studentName,
+          text,
+          classTopic: readClass()?.topic || "",
+          version: studentSubmissions.length + 1,
+          feedback: ""
+        };
+        localStorage.removeItem(feedbackStorageKey);
+        submissions.push(submission);
+        saveSubmissions(submissions);
+        renderTeacherSubmissionList();
+        showStudentSubmission();
+        writingMessage.textContent = studentSubmissions.length === 0
+          ? "글이 제출되었습니다. 선생님 화면에서 새 글로 확인할 수 있습니다."
+          : "수정 글이 제출되었습니다. 선생님 화면에 최신 글로 표시됩니다.";
+        writingMessage.classList.remove("error");
+      });
+
+      feedbackForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const text = teacherFeedback.value.trim();
+        if (!selectedTeacherStudentName) {
+          feedbackMessage.textContent = "학생이 글을 제출한 뒤 피드백을 남길 수 있습니다.";
+          feedbackMessage.classList.add("error");
+          return;
+        }
+        if (!text) {
+          feedbackMessage.textContent = "피드백 내용을 입력해 주세요.";
+          feedbackMessage.classList.add("error");
+          teacherFeedback.focus();
+          return;
+        }
+        const submissions = readSubmissions();
+        let latestIndex = -1;
+        for (let index = submissions.length - 1; index >= 0; index -= 1) {
+          if ((submissions[index].studentName || "학생") === selectedTeacherStudentName) {
+            latestIndex = index;
+            break;
+          }
+        }
+        if (latestIndex < 0) {
+          feedbackMessage.textContent = "선택한 학생의 제출 글을 찾을 수 없습니다.";
+          feedbackMessage.classList.add("error");
+          return;
+        }
+        const latest = submissions[latestIndex];
+        latest.feedback = text;
+        saveSubmissions(submissions);
+        localStorage.setItem(feedbackStorageKey, JSON.stringify({ text }));
+        renderTeacherSubmissionList();
+        showTeacherSubmission(selectedTeacherStudentName);
+        feedbackMessage.textContent = "피드백이 저장되었습니다. 학생 화면에서 확인할 수 있습니다.";
+        feedbackMessage.classList.remove("error");
+      });
+
+      studentEntryForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const school = readSchool();
+        const classInfo = readClass();
+        const enteredCode = studentSchoolCodeInput.value.trim().toUpperCase();
+        if (!school || !school.code) {
+          studentCodeHelp.textContent = "아직 설정된 학교가 없습니다. 선생님 화면에서 학교를 먼저 설정해 주세요.";
+          studentCodeHelp.classList.add("error");
+          return;
+        }
+        if (!classInfo || !classInfo.topic || !classInfo.question) {
+          studentCodeHelp.textContent = "아직 만들어진 수업이 없습니다. 선생님이 수업을 먼저 만들어 주세요.";
+          studentCodeHelp.classList.add("error");
+          return;
+        }
+        if (enteredCode !== school.code) {
+          studentCodeHelp.textContent = "학교 코드를 다시 확인해 주세요.";
+          studentCodeHelp.classList.add("error");
+          studentSchoolCodeInput.focus();
+          studentClassView.hidden = true;
+          return;
+        }
+        studentClassTopic.textContent = classInfo.topic;
+        studentClassQuestion.textContent = classInfo.question;
+        studentClassView.hidden = false;
+        showStudentSubmission();
+        studentCodeHelp.textContent = "수업에 들어왔습니다. 아래에서 오늘의 주제와 안내 질문을 확인하세요.";
+        studentCodeHelp.classList.remove("error");
+      });
+
+      studentNameInput.value = localStorage.getItem(studentNameStorageKey) || "";
+      studentNameInput.addEventListener("input", () => {
+        localStorage.setItem(studentNameStorageKey, studentNameInput.value.trim());
+        if (!studentClassView.hidden) showStudentSubmission();
+      });
+
+      const initialSchool = readSchool();
+      showSchool(initialSchool);
+      showClass(readClass());
+      renderTeacherSubmissionList();
+      showStudentSubmission();
+      showTeacherAccess(initialSchool);
+      const initialView = new URLSearchParams(window.location.search).get("view");
+      switchRole(initialView === "student" ? "student" : "teacher");
+    })();
+  </script>
+</body>
+</html>
